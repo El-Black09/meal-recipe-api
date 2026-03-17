@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Favorite {
+  id Int @id @default(autoincrement())
+  userId String @map("user_id")
+  recipeId Int @map("recipe_id")
+  title String
+  image String @map("image_url")
+  cookTime String @map("cook_time")
+  servings String @map("servings")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Index simples
+  @@index([userId])
+  @@index([recipeId])
+
+  // Index composite (ultra important)
+  @@unique([userId, recipeId])
+
+  // Index pour tri / pagination
+  @@index([createdAt])
+
+  @@map("favorites")
+}
