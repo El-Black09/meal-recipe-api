@@ -4,9 +4,15 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { DatabaseModule } from './database/database.module';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), HttpModule, DatabaseModule],
+  imports: [
+    ConfigModule.forRoot(),
+    HttpModule,
+    DatabaseModule,
+    FavoritesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
