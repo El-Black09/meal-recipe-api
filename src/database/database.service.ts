@@ -1,6 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from 'generated/prisma/client';
-import { ENV } from 'src/config/env';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
@@ -9,7 +8,14 @@ export class DatabaseService extends PrismaClient implements OnModuleInit {
   private readonly logger: Logger = new Logger(DatabaseService.name);
 
   constructor() {
-    const pool = new Pool({ connectionString: ENV.DATABASE_URL });
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error(
+        'DATABASE_URL is not defined. Add it to your environment variables or .env file.',
+      );
+    }
+
+    const pool = new Pool({ connectionString: databaseUrl });
     const adapter = new PrismaPg(pool);
 
     super({ adapter });
