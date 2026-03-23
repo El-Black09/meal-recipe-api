@@ -14,100 +14,50 @@ export class FavoritesService {
 
   async addFavorite(payload: FavoriteDto) {
     try {
-      const { userId, recipeId, title, image, cookTime, servings } = payload;
-
-      if (!userId || !recipeId || !title) {
-        throw new BadRequestException();
-      }
-
-      await this.prismaService.createFavorite(payload);
-
-      return {
-        statusCode: HttpStatus.CREATED,
-        message: 'Favorite added successfully!',
-      };
+      return await this.prismaService.createFavorite(payload);
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        this.logger.error('Invalid payload for adding favorite', error.message);
-        return {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message:
-            'Invalid payload. Please provide userId, recipeId, and title.',
-        };
-      } else {
-        this.logger.error('Error adding favorite', error.message);
-        throw error;
-      }
-    }
-  }
-
-  async getFavorite(id: number) {
-    try {
-      const favorite = await this.prismaService.getFavorite(id);
-
-      if (!favorite) {
-        throw new BadRequestException(`Favorite with id ${id} not found`);
-      }
-      return favorite;
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        this.logger.error('Favorite not found', error.message);
-        return {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: `Favorite with id ${id} not found`,
-        };
-      }
-      this.logger.error('Error retrieving favorite', error.message);
+      this.logger.error('Error adding favorite', error.message);
       throw error;
     }
   }
 
-  async deleteFavorite(id: number) {
+  async deleteFavorite(userId: string, recipeId: number) {
     try {
-      const favorite = await this.prismaService.getFavorite(id);
-
-      if (!favorite) {
-        throw new BadRequestException(`Favorite with id ${id} not found`);
-      }
-
-      await this.prismaService.deleteFavorite(id);
-
-      return {
-        statusCode: HttpStatus.OK,
-        message: `Favorite with id ${id} deleted successfully`,
-      };
+      return await this.prismaService.deleteFavorite(userId, recipeId);
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        this.logger.error('Favorite not found', error.message);
-        return {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: `Favorite with id ${id} not found`,
-        };
-      }
       this.logger.error('Error deleting favorite', error.message);
       throw error;
     }
   }
 
-  async getAllFavorites() {
+  async getOneFavorite(userId: string, recipeId: number) {
     try {
-      const favorites = await this.prismaService.getAllFavorites();
-
-      if (!favorites || favorites.length === 0) {
+      const favorite = await this.prismaService.getOneFavorite(
+        userId,
+        recipeId,
+      );
+      if (!favorite) {
+        this.logger.warn(
+          `Favorite not found for userId: ${userId} and recipeId: ${recipeId}`,
+        );
         return {
-          statusCode: HttpStatus.OK,
-          message: 'No favorites found',
-          data: [],
+          statusCode: HttpStatus.NOT_FOUND,
+          message: `Favorite not found for the given userId (${userId}) and recipeId (${recipeId}).`,
         };
       }
 
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Favorites retrieved successfully',
-        data: favorites,
-      };
+      return favorite;
     } catch (error) {
-      this.logger.error('Error retrieving all favorites', error.message);
+      this.logger.error('Error retrieving favorite', error.message);
+      throw error;
+    }
+  }
+
+  async getAllFavoritesByUserId(userId: string) {
+    try {
+      return await this.prismaService.getAllFavoritesByUserId(userId);
+    } catch (error) {
+      this.logger.error('Error retrieving favorites by userId', error.message);
       throw error;
     }
   }

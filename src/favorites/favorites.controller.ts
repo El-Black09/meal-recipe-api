@@ -22,21 +22,29 @@ export class FavoritesController {
     return this.favoritesService.addFavorite(payload);
   }
 
-  @ApiOperation({ summary: 'Delete a favorite recipe by ID' })
-  @Delete('delete/:id')
-  async deleteFavorite(@Param('id', ParseIntPipe) id: number) {
-    return this.favoritesService.deleteFavorite(id);
+  @ApiOperation({
+    summary: 'Delete a favorite recipe by user ID and recipe ID',
+  })
+  @Delete('delete/:userId/:recipeId')
+  async deleteFavorite(
+    @Param('userId') userId: string,
+    @Param('recipeId', ParseIntPipe) recipeId: number,
+  ) {
+    return this.favoritesService.deleteFavorite(userId, recipeId);
   }
 
-  @ApiOperation({ summary: 'Get all favorite recipes' })
-  @Get('all')
-  async getAllFavorites() {
-    return this.favoritesService.getAllFavorites();
+  @ApiOperation({ summary: 'Get all favorite recipes by user ID' })
+  @Get('user/:userId')
+  async getAllFavoritesByUserId(@Param('userId') userId: string) {
+    return this.favoritesService.getAllFavoritesByUserId(userId);
   }
 
-  @ApiOperation({ summary: 'Get a favorite recipe by ID' })
-  @Get(':id')
-  async getFavorite(@Param('id', ParseIntPipe) id: number) {
-    return this.favoritesService.getFavorite(id);
+  @ApiOperation({ summary: 'Get a favorite recipe by user ID and recipe ID' })
+  @Get('getOne/:userId/:recipeId')
+  async getOneFavorite(
+    @Param('userId') userId: string,
+    @Param('recipeId', ParseIntPipe) recipeId: number,
+  ) {
+    return this.favoritesService.getOneFavorite(userId, recipeId);
   }
 }
