@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { FavoriteCreateInput } from 'generated/prisma/models';
+import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
@@ -7,7 +7,7 @@ export class PrismaService {
   private readonly logger: Logger = new Logger(PrismaService.name);
   constructor(private readonly prisma: DatabaseService) {}
 
-  async createFavorite(data: FavoriteCreateInput) {
+  async createFavorite(data: Prisma.FavoriteCreateInput) {
     try {
       const existingFavorite = await this.getOneFavorite(
         data.userId,
